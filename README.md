@@ -3,6 +3,9 @@
 A [Pluto.jl](https://github.com/JuliaPluto/Pluto.jl) widget for WYSIWYG mathematical formula input, powered by [MathLive](https://mathlive.io/).
 
 ![PlutoMathInput screenshot](assets/screenshot.png)
+![virtual keyboard 2](assets/vk2.png)
+![virtual keyboard 3](assets/vk3.png)
+![virtual keyboard 4](assets/vk4.png)
 
 ## Features
 
