@@ -102,10 +102,16 @@ md"""
 """
 
 # ╔═╡ 168bbc9a-aa43-4b90-ba1b-6641265ecec4
-@bind formula_mathjson MathInput(default="1+x", format=:mathjson)
+@bind formula_mathjson MathInput(default="[\"Add\", \"y\", 1, \"x\"]", format=:mathjson)
 
 # ╔═╡ 0549da15-4b1d-42a8-a784-eb04e4eedc5a
 formula_mathjson
+
+# ╔═╡ 31c6d3cb-40fa-4b43-811f-d4ca36a32859
+@bind formula_mathjson2 MathInput(default="[\"Multiply\", \"y\", 1, \"x\"]", format=:mathjson)
+
+# ╔═╡ 6fca2315-42cb-4b3e-84dd-bf9de4497995
+formula_mathjson2
 
 # ╔═╡ Cell order:
 # ╟─8a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d
@@ -129,3 +135,5 @@ formula_mathjson
 # ╟─dee491e5-1375-416a-9b8e-07557debbd77
 # ╠═168bbc9a-aa43-4b90-ba1b-6641265ecec4
 # ╠═0549da15-4b1d-42a8-a784-eb04e4eedc5a
+# ╠═31c6d3cb-40fa-4b43-811f-d4ca36a32859
+# ╠═6fca2315-42cb-4b3e-84dd-bf9de4497995
