@@ -1,0 +1,93 @@
+### A Pluto.jl notebook ###
+# v0.20.22
+
+using Markdown
+using InteractiveUtils
+
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    #! format: off
+    return quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+    #! format: on
+end
+
+# ╔═╡ 8a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d
+begin
+    import Pkg
+    Pkg.activate(joinpath(@__DIR__, ".."))
+    Pkg.instantiate()
+    using PlutoMathInput
+end
+
+# ╔═╡ 1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
+md"""
+# PlutoMathInput.jl — Example Notebook
+
+This notebook demonstrates the **PlutoMathInput** widget, which provides a
+WYSIWYG math editor inside Pluto using [MathLive](https://mathlive.io/).
+"""
+
+# ╔═╡ 2a3b4c5d-6e7f-8a9b-0c1d-2e3f4a5b6c7d
+md"""
+## 1. Basic usage
+
+Type a formula below — the MathJSON representation is shown in the next cell.
+"""
+
+# ╔═╡ 3a4b5c6d-7e8f-9a0b-1c2d-3e4f5a6b7c8d
+@bind formula MathInput()
+
+# ╔═╡ 4a5b6c7d-8e9f-0a1b-2c3d-4e5f6a7b8c9d
+formula  # MathJSON string
+
+# ╔═╡ 5a6b7c8d-9e0f-1a2b-3c4d-5e6f7a8b9c0d
+md"""
+## 2. Default value (LaTeX)
+
+The widget can be pre-filled with a LaTeX expression:
+"""
+
+# ╔═╡ 6a7b8c9d-0e1f-2a3b-4c5d-6e7f8a9b0c1d
+@bind formula2 MathInput(latex=latex=raw"\mathcal{L}\{f\}(s) = \int_{0}^{\infty} f(t)\, e^{-st}\, \mathrm{d}t")
+
+# ╔═╡ 7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d
+formula2
+
+# ╔═╡ 8a9b0c1d-2e3f-4a5b-6c7d-8e9f0a1b2c3d
+md"""
+## 3. Read-only display
+"""
+
+# ╔═╡ 9a0b1c2d-3e4f-5a6b-7c8d-9e0f1a2b3c4d
+MathInput(latex="E = mc^2", disabled=true)
+
+# ╔═╡ 0a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d
+md"""
+## 4. LaTeX output format
+"""
+
+# ╔═╡ 1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e
+@bind formula_latex MathInput(format=:latex)
+
+# ╔═╡ 2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f
+formula_latex  # LaTeX string
+
+# ╔═╡ Cell order:
+# ╟─8a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d
+# ╟─1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
+# ╟─2a3b4c5d-6e7f-8a9b-0c1d-2e3f4a5b6c7d
+# ╠═3a4b5c6d-7e8f-9a0b-1c2d-3e4f5a6b7c8d
+# ╠═4a5b6c7d-8e9f-0a1b-2c3d-4e5f6a7b8c9d
+# ╟─5a6b7c8d-9e0f-1a2b-3c4d-5e6f7a8b9c0d
+# ╠═6a7b8c9d-0e1f-2a3b-4c5d-6e7f8a9b0c1d
+# ╠═7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d
+# ╟─8a9b0c1d-2e3f-4a5b-6c7d-8e9f0a1b2c3d
+# ╠═9a0b1c2d-3e4f-5a6b-7c8d-9e0f1a2b3c4d
+# ╟─0a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d
+# ╠═1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e
+# ╠═2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f
