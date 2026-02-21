@@ -168,11 +168,31 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
                     const ce = window.MathfieldElement?.computeEngine;
                     if (mf && ce) {
                         try {
-                            // Convert MathJSON → LaTeX via ce.serialize to preserve
-                            // operand order (ce.box reorders commutative ops like Add)
+                            // Convert MathJSON → LaTeX preserving operand order.
+                            // ce.box reorders commutative ops (Add, Multiply),
+                            // so we handle them manually: serialize each operand
+                            // individually via CE, then join in original order.
                             wrapper._suppressEmit = true;
-                            const latex = ce.serialize(JSON.parse(initMathJSON));
-                            mf.setValue(latex);
+                            const json = JSON.parse(initMathJSON);
+                            function mjsonToLatex(node) {
+                                if (Array.isArray(node) && node.length > 1) {
+                                    const [head, ...args] = node;
+                                    if (head === "Add") {
+                                        const parts = args.map(mjsonToLatex);
+                                        return parts.reduce((acc, p, i) => {
+                                            if (i === 0) return p;
+                                            if (p.startsWith("-")) return acc + p;
+                                            return acc + "+" + p;
+                                        }, "");
+                                    }
+                                    if (head === "Multiply") {
+                                        return args.map(mjsonToLatex).join("\\\\cdot ");
+                                    }
+                                }
+                                try { return ce.box(node, {canonical: false}).latex || String(node); }
+                                catch(_) { return String(node); }
+                            }
+                            mf.setValue(mjsonToLatex(json));
                         } catch(e) {
                             // UNW-05: Invalid MathJSON default — field stays empty
                             console.warn("PlutoMathInput: Invalid MathJSON default value", e);
