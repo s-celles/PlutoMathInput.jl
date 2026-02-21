@@ -3,6 +3,7 @@
 A [Pluto.jl](https://github.com/JuliaPluto/Pluto.jl) widget for WYSIWYG mathematical formula input, powered by [MathLive](https://mathlive.io/).
 
 ![PlutoMathInput screenshot](assets/screenshot.png)
+![virtual keyboard 1](assets/vk1.png)
 ![virtual keyboard 2](assets/vk2.png)
 ![virtual keyboard 3](assets/vk3.png)
 ![virtual keyboard 4](assets/vk4.png)
@@ -30,6 +31,9 @@ using PlutoMathInput
 
 # Basic input — returns MathJSON string
 @bind formula MathInput()
+
+# With MathJSON default value
+@bind formula MathInput(default="""["Add", "x", 1]""")
 
 # With LaTeX default
 @bind formula MathInput(latex="\\frac{x^2+1}{2}")
