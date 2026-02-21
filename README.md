@@ -72,8 +72,8 @@ using PlutoMathInput, Symbolics
 | `format` | `Symbol` | `:mathjson` | Output: `:mathjson`, `:latex`, `:symbolics` |
 | `disabled` | `Bool` | `false` | Read-only mode |
 | `style` | `String` | `""` | CSS style for container |
-| `options` | `Dict` | `Dict()` | MathLive options |
-| `macros` | `Dict` | `Dict()` | Custom LaTeX macros |
+| `options` | `Dict` | `Dict()` | MathLive options (e.g., `"smartFence" => true`) — see [docs](docs/options-and-macros.md) |
+| `macros` | `Dict` | `Dict()` | Custom LaTeX macros (e.g., `"\\R" => "\\mathbb{R}"`) — see [docs](docs/options-and-macros.md) |
 
 ## Example Notebook
 

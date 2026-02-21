@@ -35,6 +35,7 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
 
     <div class="math-field-container"
         style="width: 100%; min-height: 2.5em; border: 1px solid #ccc; border-radius: 4px; padding: 8px; font-size: 1.2em;">
+        <span class="mathinput-fallback">$(isempty(mi.latex) ? "Loading math editor..." : mi.latex)</span>
     </div>
 
     <script>
@@ -47,6 +48,11 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
     const isDisabled = $(disabled_str);
     const macros = $(HypertextLiteral.JavaScript(macros_json));
     const options = $(HypertextLiteral.JavaScript(options_json));
+
+    // UNW-04: Web Components feature detection
+    if (!window.customElements) {
+        container.textContent = "Your browser does not support math input. Please use a modern browser.";
+    } else {
 
     function loadScript(src) {
         if (document.querySelector('script[src=\"' + src + '\"]')) {
@@ -65,9 +71,13 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
         const mf = document.createElement("math-field");
         mf.style.cssText = "width: 100%; font-size: inherit; display: block;";
 
-        // Set initial value via textContent (works before custom element upgrade)
+        // UNW-05: Set initial value via textContent (works before custom element upgrade)
         if (initLatex) {
-            mf.textContent = initLatex;
+            try {
+                mf.textContent = initLatex;
+            } catch(e) {
+                console.warn("PlutoMathInput: Invalid LaTeX default value", e);
+            }
         }
 
         // Read-only via attribute (works before upgrade)
@@ -79,6 +89,14 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
         container.style.border = "none";
         container.style.padding = "0";
         container.replaceChildren(mf);
+
+        // OPT-05: Apply MathLive options as direct properties
+        Object.entries(options).forEach(([key, val]) => { mf[key] = val; });
+
+        // OPT-07: Apply custom LaTeX macros (merge with built-in macros)
+        if (Object.keys(macros).length > 0) {
+            mf.macros = {...mf.macros, ...macros};
+        }
 
         // @bind: forward math-field events to the wrapper
         function emitValue() {
@@ -104,6 +122,11 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
 
         mf.addEventListener("input", emitValue);
         mf.addEventListener("change", emitValue);
+
+        // EVT-06: Enter key submission
+        mf.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") emitValue();
+        });
     }
 
     // Load MathLive, then setup immediately.
@@ -126,7 +149,8 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
                         try {
                             mf.setValue(initMathJSON, {format: "math-json"});
                         } catch(e) {
-                            console.warn("PlutoMathInput: Could not display MathJSON default", e);
+                            // UNW-05: Invalid MathJSON default — field stays empty
+                            console.warn("PlutoMathInput: Invalid MathJSON default value", e);
                         }
                     }
                 }
@@ -156,6 +180,8 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
     } else {
         wrapper.value = initMathJSON || "";
     }
+
+    } // end UNW-04 customElements check
     </script>
     </span>
     """

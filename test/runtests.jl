@@ -94,6 +94,45 @@ using PlutoMathInput
         html = repr(MIME"text/html"(), mi)
         @test occursin("width: 50%", html)
     end
+
+    @testset "HTML options applied (OPT-05)" begin
+        mi = MathInput(options = Dict{String,Any}("smartFence" => true))
+        html = repr(MIME"text/html"(), mi)
+        @test occursin("smartFence", html)
+    end
+
+    @testset "HTML macros applied (OPT-07)" begin
+        mi = MathInput(macros = Dict{String,String}("\\R" => "\\mathbb{R}"))
+        html = repr(MIME"text/html"(), mi)
+        @test occursin("\\\\mathbb{R}", html) || occursin("mathbb", html)
+    end
+
+    @testset "HTML loading indicator (STA-03)" begin
+        mi = MathInput()
+        html = repr(MIME"text/html"(), mi)
+        @test occursin("Loading math editor...", html)
+        @test occursin("mathinput-fallback", html)
+    end
+
+    @testset "HTML invalid default renders (UNW-05)" begin
+        mi = MathInput(default = "invalid json{{{")
+        html = repr(MIME"text/html"(), mi)
+        # Should render without error
+        @test occursin("math-field", html)
+    end
+
+    @testset "HTML Web Components check (UNW-04)" begin
+        mi = MathInput()
+        html = repr(MIME"text/html"(), mi)
+        @test occursin("customElements", html)
+    end
+
+    @testset "HTML static fallback (EVT-07)" begin
+        mi = MathInput(latex = "x^2")
+        html = repr(MIME"text/html"(), mi)
+        @test occursin("mathinput-fallback", html)
+        @test occursin("x^2", html)
+    end
 end
 
 # Symbolics extension tests (only run if Symbolics is available)
