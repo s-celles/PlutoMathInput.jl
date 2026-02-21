@@ -168,12 +168,11 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
                     const ce = window.MathfieldElement?.computeEngine;
                     if (mf && ce) {
                         try {
-                            // Convert MathJSON → LaTeX without CE canonicalization,
-                            // then display as LaTeX to avoid canonical rendering
-                            // (e.g. Derivative shown as x↦sin(x)' instead of d/dx sin(x))
+                            // Convert MathJSON → LaTeX via ce.serialize to preserve
+                            // operand order (ce.box reorders commutative ops like Add)
                             wrapper._suppressEmit = true;
-                            const expr = ce.box(JSON.parse(initMathJSON), {canonical: false});
-                            mf.setValue(expr.latex);
+                            const latex = ce.serialize(JSON.parse(initMathJSON));
+                            mf.setValue(latex);
                         } catch(e) {
                             // UNW-05: Invalid MathJSON default — field stays empty
                             console.warn("PlutoMathInput: Invalid MathJSON default value", e);
