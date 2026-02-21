@@ -117,7 +117,19 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
 
         // Load Compute Engine in background for MathJSON support
         if (outputFormat !== "latex") {
-            loadScript($(COMPUTE_ENGINE_CDN_JS)).catch((e) => {
+            loadScript($(COMPUTE_ENGINE_CDN_JS)).then(() => {
+                // Display MathJSON default in the math-field (requires CE)
+                if (!initLatex && initMathJSON) {
+                    const mf = container.querySelector("math-field");
+                    if (mf && typeof mf.setValue === "function") {
+                        try {
+                            mf.setValue(initMathJSON, {format: "math-json"});
+                        } catch(e) {
+                            console.warn("PlutoMathInput: Could not display MathJSON default", e);
+                        }
+                    }
+                }
+            }).catch((e) => {
                 console.warn("PlutoMathInput: Compute Engine not loaded, MathJSON output may fall back to LaTeX.", e);
             });
         }
