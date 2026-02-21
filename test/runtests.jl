@@ -79,13 +79,13 @@ using PlutoMathInput
         html = repr(MIME"text/html"(), mi)
         @test occursin("math-field", html)
         @test occursin("mathlive", html)
-        @test occursin("cdnjs.cloudflare.com", html)
+        @test occursin("cdn.jsdelivr.net", html)
     end
 
     @testset "HTML disabled mode (STA-04)" begin
         mi = MathInput(latex = "E = mc^2", disabled = true)
         html = repr(MIME"text/html"(), mi)
-        @test occursin("read-only", html)
+        @test occursin("readOnly", html)
     end
 
     @testset "HTML custom style (OPT-06)" begin
@@ -96,8 +96,14 @@ using PlutoMathInput
 end
 
 # Symbolics extension tests (only run if Symbolics is available)
-try
+const _HAS_SYMBOLICS = try
     using Symbolics
+    true
+catch
+    false
+end
+
+if _HAS_SYMBOLICS
     @testset "Symbolics extension (OPT-01, OPT-02)" begin
         @testset "to_symbolics" begin
             expr = PlutoMathInput.to_symbolics("[\"Add\", \"x\", 1]")
@@ -105,7 +111,7 @@ try
         end
 
         @testset "from_symbolics" begin
-            @variables x
+            Symbolics.@variables x
             mjson = PlutoMathInput.from_symbolics(x + 1)
             @test mjson isa String
         end
@@ -117,6 +123,6 @@ try
             @test !(val isa String)
         end
     end
-catch e
-    @info "Symbolics.jl not available, skipping extension tests" exception = e
+else
+    @info "Symbolics.jl not available, skipping extension tests"
 end
