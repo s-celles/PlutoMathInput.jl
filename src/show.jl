@@ -3,6 +3,7 @@ const MATHLIVE_VERSION = "0.108.3"
 const MATHLIVE_CDN_BASE = "https://cdn.jsdelivr.net/npm/mathlive@$(MATHLIVE_VERSION)"
 const MATHLIVE_CDN_JS  = "$(MATHLIVE_CDN_BASE)/mathlive.min.js"
 const MATHLIVE_CDN_CSS = "$(MATHLIVE_CDN_BASE)/mathlive-static.css"
+const MATHLIVE_CDN_SOUNDS = "$(MATHLIVE_CDN_BASE)/sounds"
 const COMPUTE_ENGINE_CDN_JS = "https://cdn.jsdelivr.net/npm/@cortex-js/compute-engine/dist/compute-engine.min.umd.js"
 
 function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
@@ -108,10 +109,10 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
     // Load MathLive, then setup immediately.
     // Compute Engine loads in background (optional, for MathJSON output).
     loadScript($(MATHLIVE_CDN_JS)).then(() => {
-        // Disable sounds globally — MathLive resolves sound paths relative to
+        // Fix sounds directory — MathLive resolves sound paths relative to
         // the script URL, creating invalid CDN paths (mathlive.min.js/sounds/...)
         const MFClass = customElements.get("math-field");
-        if (MFClass) MFClass.soundsDirectory = null;
+        if (MFClass) MFClass.soundsDirectory = $(MATHLIVE_CDN_SOUNDS);
 
         setup();
 

@@ -81,7 +81,8 @@ Open `notebooks/example.jl` in Pluto for an interactive demo.
 
 ## Related Projects
 
-- [MathLive](https://mathlive.io/) — the web component powering the math input field ([GitHub](https://github.com/arnog/mathlive))
+- [MathLive](https://mathlive.io/) — the math editing library powering this widget ([GitHub](https://github.com/arnog/mathlive))
+- [`<math-field>`](https://mathlive.io/mathfield/) — the web component (custom element) providing the interactive math input field
 - [MathJSON](https://cortexjs.io/math-json/) — a JSON representation for mathematical expressions ([specification](https://cortexjs.io/math-json/))
 - [MathJSON.jl](https://github.com/s-celles/MathJSON.jl) — Julia package to parse and manipulate MathJSON expressions
 - [Compute Engine](https://cortexjs.io/compute-engine/) — JavaScript symbolic computation engine by [CortexJS](https://cortexjs.io/)
