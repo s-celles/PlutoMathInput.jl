@@ -53,10 +53,16 @@ The widget can be pre-filled with a MathJSON expression:
 """
 
 # ╔═╡ 42625fdb-c3b9-4a34-85f1-34a86d39137e
-@bind formula_mathjson_default MathInput(default="[\"Add\",\"x\",1]", format=:mathjson)
+@bind formula_mathjson_default MathInput(default="[\"Derivative\", [\"Sin\", \"x\"], \"x\"]", format=:mathjson, canonicalize=false)
 
 # ╔═╡ 70cf1f91-f021-4e18-9a71-b505c6fd4b7e
 formula_mathjson_default  # MathJSON string
+
+# ╔═╡ c582cc9c-994c-4b97-a9b7-2db3b71d30a3
+@bind formula_mathjson_default2 MathInput(default="[\"Integrate\", [\"Sin\", \"x\"], \"x\"]", format=:mathjson, canonicalize=false)
+
+# ╔═╡ c80f902d-c43f-4fcc-ac1b-d389606a2ff4
+formula_mathjson_default2
 
 # ╔═╡ 5a6b7c8d-9e0f-1a2b-3c4d-5e6f7a8b9c0d
 md"""
@@ -110,6 +116,8 @@ formula_mathjson
 # ╟─b2d74da0-853b-4bae-bc95-5e8568f45233
 # ╠═42625fdb-c3b9-4a34-85f1-34a86d39137e
 # ╠═70cf1f91-f021-4e18-9a71-b505c6fd4b7e
+# ╠═c582cc9c-994c-4b97-a9b7-2db3b71d30a3
+# ╠═c80f902d-c43f-4fcc-ac1b-d389606a2ff4
 # ╟─5a6b7c8d-9e0f-1a2b-3c4d-5e6f7a8b9c0d
 # ╠═6a7b8c9d-0e1f-2a3b-4c5d-6e7f8a9b0c1d
 # ╠═7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d

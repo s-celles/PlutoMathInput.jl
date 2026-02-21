@@ -13,6 +13,7 @@ by default, compatible with [`MathJSON.jl`](https://github.com/s-celles/MathJSON
 - `style::String=""`: CSS style applied to the container `<div>`
 - `options::Dict{String,Any}=Dict()`: extra MathLive options (e.g. `"smartFence" => true`)
 - `macros::Dict{String,String}=Dict()`: custom LaTeX macros (e.g. `"\\\\R" => "\\\\mathbb{R}"`)
+- `canonicalize::Bool=true`: if `true`, display MathJSON defaults in the math-field via the Compute Engine (may canonicalize expressions); if `false`, skip CE display and keep the raw MathJSON for `@bind`
 
 # Examples
 ```julia
@@ -36,6 +37,7 @@ struct MathInput
     style::String
     options::Dict{String,Any}
     macros::Dict{String,String}
+    canonicalize::Bool
 end
 
 function MathInput(;
@@ -46,10 +48,11 @@ function MathInput(;
     style::String = "",
     options::Dict{String,Any} = Dict{String,Any}(),
     macros::Dict{String,String} = Dict{String,String}(),
+    canonicalize::Bool = false,
 )
     format in (:mathjson, :latex, :symbolics) ||
         throw(ArgumentError("format must be :mathjson, :latex, or :symbolics, got :$format"))
-    return MathInput(default, latex, format, disabled, style, options, macros)
+    return MathInput(default, latex, format, disabled, style, options, macros, canonicalize)
 end
 
 # --- AbstractPlutoDingetjes interface ---

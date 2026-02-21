@@ -20,6 +20,7 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
     # Determine initial value
     initial_latex    = mi.latex
     initial_mathjson = mi.default
+    canonicalize     = mi.canonicalize ? "true" : "false"
 
     # Strategy:
     # - Load MathLive via a dynamically created <script> (non-ESM)
@@ -48,6 +49,7 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
     const isDisabled = $(disabled_str);
     const macros = $(HypertextLiteral.JavaScript(macros_json));
     const options = $(HypertextLiteral.JavaScript(options_json));
+    const canonicalize = $(canonicalize);
 
     // UNW-04: Web Components feature detection
     if (!window.customElements) {
@@ -98,19 +100,37 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
             mf.macros = {...mf.macros, ...macros};
         }
 
+        // Guard flag: suppress emitValue during programmatic value setting
+        // (e.g. mf.expression = ... triggers "input" events that would
+        // overwrite wrapper.value with CE-canonicalized MathJSON)
+        wrapper._suppressEmit = false;
+
         // @bind: forward math-field events to the wrapper
         function emitValue() {
+            if (wrapper._suppressEmit) return;
             if (outputFormat === "latex") {
                 wrapper.value = typeof mf.getValue === "function"
                     ? mf.getValue("latex") : (mf.value || "");
             } else {
                 try {
-                    const mjson = mf.getValue("math-json");
-                    const mjsonStr = (typeof mjson === "string") ? mjson : JSON.stringify(mjson);
-                    if (mjsonStr.includes("compute-engine-not-available")) {
-                        wrapper.value = mf.getValue("latex");
+                    if (canonicalize !== "true") {
+                        // Non-canonical: parse LaTeX → MathJSON without CE canonicalization
+                        const latex = typeof mf.getValue === "function" ? mf.getValue("latex") : (mf.value || "");
+                        const ce = window.MathfieldElement?.computeEngine;
+                        if (ce && latex) {
+                            const expr = ce.parse(latex, {canonical: false});
+                            wrapper.value = JSON.stringify(expr.json);
+                        } else {
+                            wrapper.value = latex || "";
+                        }
                     } else {
-                        wrapper.value = mjsonStr;
+                        const mjson = mf.getValue("math-json");
+                        const mjsonStr = (typeof mjson === "string") ? mjson : JSON.stringify(mjson);
+                        if (mjsonStr.includes("compute-engine-not-available")) {
+                            wrapper.value = mf.getValue("latex");
+                        } else {
+                            wrapper.value = mjsonStr;
+                        }
                     }
                 } catch (e) {
                     wrapper.value = typeof mf.getValue === "function"
@@ -145,12 +165,21 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
                 // Display MathJSON default in the math-field (requires CE)
                 if (!initLatex && initMathJSON) {
                     const mf = container.querySelector("math-field");
-                    if (mf && typeof mf.setValue === "function") {
+                    const ce = window.MathfieldElement?.computeEngine;
+                    if (mf && ce) {
                         try {
-                            mf.setValue(initMathJSON, {format: "math-json"});
+                            // Convert MathJSON → LaTeX without CE canonicalization,
+                            // then display as LaTeX to avoid canonical rendering
+                            // (e.g. Derivative shown as x↦sin(x)' instead of d/dx sin(x))
+                            wrapper._suppressEmit = true;
+                            const expr = ce.box(JSON.parse(initMathJSON), {canonical: false});
+                            mf.setValue(expr.latex);
                         } catch(e) {
                             // UNW-05: Invalid MathJSON default — field stays empty
                             console.warn("PlutoMathInput: Invalid MathJSON default value", e);
+                        } finally {
+                            // Delay unsuppressing — setValue may fire async events
+                            setTimeout(() => { wrapper._suppressEmit = false; }, 0);
                         }
                     }
                 }
