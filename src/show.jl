@@ -61,27 +61,65 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
     }
 
     function setup() {
-        console.log("PlutoMathInput: setup() called");
         const mf = document.createElement("math-field");
+        mf.style.cssText = "width: 100%; font-size: inherit; display: block;";
 
+        // Set initial value via textContent (works before custom element upgrade)
+        if (initLatex) {
+            mf.textContent = initLatex;
+        }
+
+        // Read-only via attribute (works before upgrade)
+        if (isDisabled === "true") {
+            mf.setAttribute("read-only", "");
+        }
+
+        // Disable sounds to avoid 404 errors (MathLive resolves sound paths
+        // relative to the script URL which creates invalid paths)
+        mf.setAttribute("sounds", "none");
+
+        // Insert into DOM
         container.style.border = "none";
         container.style.padding = "0";
         container.replaceChildren(mf);
 
-        console.log("PlutoMathInput: mf inserted, isConnected =", mf.isConnected);
+        // @bind: forward math-field events to the wrapper
+        function emitValue() {
+            if (outputFormat === "latex") {
+                wrapper.value = typeof mf.getValue === "function"
+                    ? mf.getValue("latex") : (mf.value || "");
+            } else {
+                try {
+                    const mjson = mf.getValue("math-json");
+                    const mjsonStr = (typeof mjson === "string") ? mjson : JSON.stringify(mjson);
+                    if (mjsonStr.includes("compute-engine-not-available")) {
+                        wrapper.value = mf.getValue("latex");
+                    } else {
+                        wrapper.value = mjsonStr;
+                    }
+                } catch (e) {
+                    wrapper.value = typeof mf.getValue === "function"
+                        ? mf.getValue("latex") : (mf.value || "");
+                }
+            }
+            wrapper.dispatchEvent(new CustomEvent("input"));
+        }
 
-        mf.addEventListener("focus", () => console.log("PlutoMathInput: FOCUS"));
-        mf.addEventListener("keydown", (e) => console.log("PlutoMathInput: KEYDOWN", e.key));
-        mf.addEventListener("input", (e) => console.log("PlutoMathInput: INPUT", mf.getValue("latex")));
+        mf.addEventListener("input", emitValue);
+        mf.addEventListener("change", emitValue);
     }
-
-    console.log("PlutoMathInput: script started");
 
     // Load MathLive, then setup immediately.
     // Compute Engine loads in background (optional, for MathJSON output).
     loadScript($(MATHLIVE_CDN_JS)).then(() => {
-        console.log("PlutoMathInput: MathLive loaded, calling setup");
         setup();
+
+        // Load Compute Engine in background for MathJSON support
+        if (outputFormat !== "latex") {
+            loadScript($(COMPUTE_ENGINE_CDN_JS)).catch((e) => {
+                console.warn("PlutoMathInput: Compute Engine not loaded, MathJSON output may fall back to LaTeX.", e);
+            });
+        }
     }).catch((e) => {
         // UNW-01: Fallback textarea
         console.warn("PlutoMathInput: MathLive failed to load.", e);
