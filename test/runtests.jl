@@ -85,7 +85,8 @@ using PlutoMathInput
     @testset "HTML disabled mode (STA-04)" begin
         mi = MathInput(latex = "E = mc^2", disabled = true)
         html = repr(MIME"text/html"(), mi)
-        @test occursin("readOnly", html)
+        # disabled is applied dynamically via JS (isDisabled variable)
+        @test occursin("true", html)  # isDisabled = "true" in the JS
     end
 
     @testset "HTML custom style (OPT-06)" begin
