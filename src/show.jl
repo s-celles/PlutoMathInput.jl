@@ -74,10 +74,6 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
             mf.setAttribute("read-only", "");
         }
 
-        // Disable sounds to avoid 404 errors (MathLive resolves sound paths
-        // relative to the script URL which creates invalid paths)
-        mf.setAttribute("sounds", "none");
-
         // Insert into DOM
         container.style.border = "none";
         container.style.padding = "0";
@@ -112,6 +108,11 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
     // Load MathLive, then setup immediately.
     // Compute Engine loads in background (optional, for MathJSON output).
     loadScript($(MATHLIVE_CDN_JS)).then(() => {
+        // Disable sounds globally — MathLive resolves sound paths relative to
+        // the script URL, creating invalid CDN paths (mathlive.min.js/sounds/...)
+        const MFClass = customElements.get("math-field");
+        if (MFClass) MFClass.soundsDirectory = null;
+
         setup();
 
         // Load Compute Engine in background for MathJSON support

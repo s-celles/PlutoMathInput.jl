@@ -40,7 +40,7 @@ Type a formula below — the MathJSON representation is shown in the next cell.
 """
 
 # ╔═╡ 3a4b5c6d-7e8f-9a0b-1c2d-3e4f5a6b7c8d
-@bind formula MathInput()
+@bind formula MathInput(default="[\"Add\", \"x\", 1]")
 
 # ╔═╡ 4a5b6c7d-8e9f-0a1b-2c3d-4e5f6a7b8c9d
 formula  # MathJSON string
@@ -53,7 +53,7 @@ The widget can be pre-filled with a LaTeX expression:
 """
 
 # ╔═╡ 6a7b8c9d-0e1f-2a3b-4c5d-6e7f8a9b0c1d
-@bind formula2 MathInput(latex=latex=raw"\mathcal{L}\{f\}(s) = \int_{0}^{\infty} f(t)\, e^{-st}\, \mathrm{d}t")
+@bind formula2 MathInput(latex=raw"\mathcal{L}\{f\}(s) = \int_{0}^{\infty} f(t)\, e^{-st}\, \mathrm{d}t")
 
 # ╔═╡ 7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d
 formula2

@@ -79,5 +79,6 @@ function Bonds.transform_value(mi::MathInput, value_from_js)
     end
 end
 
-# Fallback: just return the string. Overridden by the Symbolics extension.
-_maybe_to_symbolics(s::String) = s
+# Fallback: just return the value. The Symbolics extension adds a more
+# specific method for String that performs the actual conversion.
+_maybe_to_symbolics(s) = s
