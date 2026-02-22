@@ -236,3 +236,134 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
 
     show(io, mime, result)
 end
+
+function Base.show(io::IO, mime::MIME"text/html", md::MathDisplay)
+    # Serialise options & macros to JSON for JS consumption
+    options_json = isempty(md.options) ? "{}" : JSON3.write(md.options)
+    macros_json  = isempty(md.macros)  ? "{}" : JSON3.write(md.macros)
+
+    style_attr      = isempty(md.style) ? "" : md.style
+    initial_latex    = md.latex
+    initial_mathjson = md.default
+
+    result = @htl """
+    <span style=$(style_attr)>
+    <link rel="stylesheet" href=$(MATHLIVE_CDN_CSS) />
+
+    <div class="math-display-container"
+        style="width: 100%; min-height: 2em; text-align: center; font-size: 1.2em;">
+        <span class="mathdisplay-fallback">$(isempty(md.latex) ? (isempty(md.default) ? "" : md.default) : md.latex)</span>
+    </div>
+
+    <script>
+    const wrapper = currentScript.parentElement;
+    const container = wrapper.querySelector(".math-display-container");
+
+    const initLatex = $(initial_latex);
+    const initMathJSON = $(initial_mathjson);
+    const macros = $(HypertextLiteral.JavaScript(macros_json));
+    const options = $(HypertextLiteral.JavaScript(options_json));
+
+    // Web Components feature detection
+    if (!window.customElements) {
+        // Fallback: show raw LaTeX/MathJSON text
+    } else {
+
+    function loadScript(src) {
+        if (document.querySelector('script[src=\"' + src + '\"]')) {
+            return Promise.resolve();
+        }
+        return new Promise((resolve, reject) => {
+            const s = document.createElement("script");
+            s.src = src;
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
+        });
+    }
+
+    function setup() {
+        const mf = document.createElement("math-field");
+        mf.style.cssText = "display: inline-block; width: auto; font-size: inherit;";
+
+        // Always read-only for MathDisplay
+        mf.setAttribute("read-only", "");
+
+        // Set initial LaTeX value via textContent (works before custom element upgrade)
+        if (initLatex) {
+            try {
+                mf.textContent = initLatex;
+            } catch(e) {
+                console.warn("PlutoMathDisplay: Invalid LaTeX value", e);
+            }
+        }
+
+        // Insert into DOM
+        container.replaceChildren(mf);
+
+        // Apply MathLive options as direct properties
+        Object.entries(options).forEach(([key, val]) => { mf[key] = val; });
+
+        // Apply custom LaTeX macros (merge with built-in macros)
+        if (Object.keys(macros).length > 0) {
+            mf.macros = {...mf.macros, ...macros};
+        }
+    }
+
+    loadScript($(MATHLIVE_CDN_JS)).then(() => {
+        const MFClass = customElements.get("math-field");
+        if (MFClass) MFClass.soundsDirectory = $(MATHLIVE_CDN_SOUNDS);
+
+        setup();
+
+        // If no LaTeX but MathJSON provided, load Compute Engine to convert
+        if (!initLatex && initMathJSON) {
+            loadScript($(COMPUTE_ENGINE_CDN_JS)).then(() => {
+                const mf = container.querySelector("math-field");
+                const ce = window.MathfieldElement?.computeEngine;
+                if (mf && ce) {
+                    try {
+                        const json = JSON.parse(initMathJSON);
+                        function mjsonToLatex(node) {
+                            if (Array.isArray(node) && node.length > 1) {
+                                const [head, ...args] = node;
+                                if (head === "Add") {
+                                    const parts = args.map(mjsonToLatex);
+                                    return parts.reduce((acc, p, i) => {
+                                        if (i === 0) return p;
+                                        if (p.startsWith("-")) return acc + p;
+                                        return acc + "+" + p;
+                                    }, "");
+                                }
+                                if (head === "Multiply") {
+                                    return args.map(mjsonToLatex).join("\\\\cdot ");
+                                }
+                            }
+                            try { return ce.box(node, {canonical: false}).latex || String(node); }
+                            catch(_) { return String(node); }
+                        }
+                        mf.setValue(mjsonToLatex(json));
+                    } catch(e) {
+                        console.warn("PlutoMathDisplay: Invalid MathJSON value", e);
+                    }
+                }
+            }).catch((e) => {
+                console.warn("PlutoMathDisplay: Compute Engine not loaded.", e);
+            });
+        }
+    }).catch((e) => {
+        // Fallback: show raw LaTeX or MathJSON text in a styled span
+        console.warn("PlutoMathDisplay: MathLive failed to load.", e);
+        const fallback = document.createElement("span");
+        fallback.style.cssText = "font-family: serif; font-style: italic;";
+        fallback.textContent = initLatex || initMathJSON || "";
+        container.replaceChildren(fallback);
+    });
+
+    } // end customElements check
+    </script>
+    </span>
+    """
+
+    show(io, mime, result)
+end

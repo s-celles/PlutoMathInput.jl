@@ -135,6 +135,112 @@ using PlutoMathInput
     end
 end
 
+@testset "MathDisplay" begin
+
+    # --- Phase 2: Constructor tests (T003, T004) ---
+
+    @testset "Constructor defaults" begin
+        md = MathDisplay()
+        @test md.default == ""
+        @test md.latex == ""
+        @test md.style == ""
+        @test isempty(md.options)
+        @test isempty(md.macros)
+    end
+
+    @testset "Constructor with arguments" begin
+        md = MathDisplay(
+            default = "[\"Add\", \"x\", 1]",
+            latex = "x + 1",
+            style = "font-size: 2em;",
+            options = Dict{String,Any}("letterShapeStyle" => "french"),
+            macros = Dict{String,String}("\\R" => "\\mathbb{R}"),
+        )
+        @test md.default == "[\"Add\", \"x\", 1]"
+        @test md.latex == "x + 1"
+        @test md.style == "font-size: 2em;"
+        @test md.options["letterShapeStyle"] == "french"
+        @test md.macros["\\R"] == "\\mathbb{R}"
+    end
+
+    # --- Phase 3: User Story 1 tests (T006-T010) ---
+
+    @testset "HTML rendering" begin
+        md = MathDisplay(latex = "x^2")
+        html = repr(MIME"text/html"(), md)
+        @test occursin("math-field", html)
+        @test occursin("mathlive", html)
+        @test occursin("cdn.jsdelivr.net", html)
+    end
+
+    @testset "HTML read-only attribute" begin
+        md = MathDisplay(latex = "x^2")
+        html = repr(MIME"text/html"(), md)
+        @test occursin("read-only", html)
+    end
+
+    @testset "HTML centering" begin
+        md = MathDisplay(latex = "x^2")
+        html = repr(MIME"text/html"(), md)
+        @test occursin("text-align", html)
+    end
+
+    @testset "HTML fallback" begin
+        md = MathDisplay(latex = "x^2")
+        html = repr(MIME"text/html"(), md)
+        @test occursin("mathdisplay-fallback", html)
+        @test occursin("x^2", html)
+    end
+
+    @testset "HTML empty LaTeX" begin
+        md = MathDisplay()
+        html = repr(MIME"text/html"(), md)
+        @test occursin("mathdisplay-fallback", html)
+    end
+
+    # --- Phase 4: User Story 2 tests (T014-T016) ---
+
+    @testset "HTML MathJSON rendering" begin
+        md = MathDisplay(default = "[\"Add\", \"x\", 1]")
+        html = repr(MIME"text/html"(), md)
+        @test occursin("math-field", html)
+        @test occursin("[\"Add\", \"x\", 1]", html) || occursin("[\\\"Add\\\", \\\"x\\\", 1]", html) || occursin("Add", html)
+    end
+
+    @testset "HTML LaTeX precedence over MathJSON" begin
+        md = MathDisplay(default = "[\"Add\", \"x\", 1]", latex = "x+1")
+        html = repr(MIME"text/html"(), md)
+        @test occursin("x+1", html)
+    end
+
+    @testset "HTML invalid MathJSON" begin
+        md = MathDisplay(default = "invalid json{{{")
+        html = repr(MIME"text/html"(), md)
+        @test occursin("math-field", html)
+    end
+
+    # --- Phase 5: User Story 3 tests (T020-T022) ---
+
+    @testset "HTML custom style" begin
+        md = MathDisplay(style = "width: 50%; background: #f0f0f0;")
+        html = repr(MIME"text/html"(), md)
+        @test occursin("width: 50%", html)
+    end
+
+    @testset "HTML macros" begin
+        md = MathDisplay(macros = Dict{String,String}("\\R" => "\\mathbb{R}"))
+        html = repr(MIME"text/html"(), md)
+        @test occursin("\\\\mathbb{R}", html) || occursin("mathbb", html)
+    end
+
+    @testset "HTML options" begin
+        md = MathDisplay(options = Dict{String,Any}("letterShapeStyle" => "french"))
+        html = repr(MIME"text/html"(), md)
+        @test occursin("letterShapeStyle", html)
+    end
+
+end
+
 # Symbolics extension tests (only run if Symbolics is available)
 const _HAS_SYMBOLICS = try
     using Symbolics

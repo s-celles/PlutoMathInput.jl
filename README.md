@@ -16,6 +16,7 @@ A [Pluto.jl](https://github.com/JuliaPluto/Pluto.jl) widget for WYSIWYG mathemat
 - 🧮 **Symbolics.jl integration** — optional conversion to symbolic expressions
 - ⌨️ **Virtual keyboard** — touch-friendly math keyboard on mobile devices
 - 🔄 **Multiple output formats** — MathJSON, LaTeX, or Symbolics.Num
+- 🖥️ **Read-only display** — `MathDisplay` renders centered, read-only formulas from LaTeX or MathJSON
 
 ## Installation
 
@@ -38,8 +39,11 @@ using PlutoMathInput
 # With LaTeX default
 @bind formula MathInput(latex="\\frac{x^2+1}{2}")
 
-# Read-only display
-MathInput(latex="E = mc^2", disabled=true)
+# Read-only display (centered, no editing)
+MathDisplay(latex="E = mc^2")
+
+# Read-only display from MathJSON
+MathDisplay(default="""["Add", "x", 1]""")
 
 # LaTeX output format
 @bind tex MathInput(format=:latex)

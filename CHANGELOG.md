@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `MathDisplay` component: read-only, centered mathematical formula display using MathLive
+  - Accepts LaTeX (`latex` parameter) or MathJSON (`default` parameter) input
+  - Always read-only with no editable cursor or keyboard affordances
+  - Horizontally centered in the Pluto cell
+  - Supports custom CSS styling (`style`), MathLive options (`options`), and LaTeX macros (`macros`)
+  - Graceful fallback when CDN is unavailable (shows raw LaTeX/MathJSON text)
+  - Does not participate in `@bind` interface (display-only)
+
 ## [0.2.0] - 2026-02-21
 
 ### Added

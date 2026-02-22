@@ -1,7 +1,7 @@
 name = "PlutoMathInput"
 uuid = "4bac68be-45d4-40a9-9f37-f14fc6d2878f"
 authors = ["Sébastien Celles"]
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 AbstractPlutoDingetjes = "6e696c72-6542-2067-7265-42206c756150"
