@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.22
+# v0.20.21
 
 using Markdown
 using InteractiveUtils
@@ -22,6 +22,7 @@ begin
     Pkg.activate(joinpath(@__DIR__, ".."))
     Pkg.instantiate()
     using PlutoMathInput
+	using MathJSON
 end
 
 # ╔═╡ 1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
@@ -72,7 +73,7 @@ The widget can be pre-filled with a LaTeX expression:
 """
 
 # ╔═╡ 6a7b8c9d-0e1f-2a3b-4c5d-6e7f8a9b0c1d
-@bind formula_latex_default MathInput(latex=raw"\mathcal{L}\{f\}(s) = \int_{0}^{\infty} f(t)\, e^{-st}\, \mathrm{d}t", format=:mathjson)
+@bind formula_latex_default MathInput(latex=raw"\mathcal{L}\{f\}(s) = \int_{0}^{\infty} f(t)\, e^{-st}\, \mathrm{d}t", format=:latex)
 
 # ╔═╡ 7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d
 formula_latex_default
@@ -113,8 +114,38 @@ formula_mathjson
 # ╔═╡ 6fca2315-42cb-4b3e-84dd-bf9de4497995
 formula_mathjson2
 
+# ╔═╡ 418a0962-bddb-4a69-8755-6787cfe70616
+md"""
+## 7. MathJSON Display (auto-rendering)
+
+When both `PlutoMathInput` and `MathJSON` are loaded, MathJSON expressions are **automatically rendered** as formatted mathematics — no extra setup needed.
+"""
+
+# ╔═╡ f3b985bb-3778-4aad-8cdc-4df693c9ea73
+NumberExpr(42)
+
+# ╔═╡ 2ec67358-4a9a-4ac7-b04a-5dc581fd4e4d
+SymbolExpr("x")
+
+# ╔═╡ d10ebfc8-dc42-47cd-b0c9-cec631df75e8
+FunctionExpr(:Add, [SymbolExpr("x"), NumberExpr(1)])
+
+# ╔═╡ e5170e29-a403-4a4b-9742-757b25779853
+FunctionExpr(:Multiply, [SymbolExpr("a"), SymbolExpr("b")])
+
+# ╔═╡ e55a46d6-f1e1-4c5e-913c-e030950add25
+md"""
+Operand order is preserved — `x + 1` stays `x + 1`, not `1 + x`:
+"""
+
+# ╔═╡ 6bc4581e-845b-4bd2-8a77-3cc3807decc9
+FunctionExpr(:Add, [SymbolExpr("y"), NumberExpr(2), SymbolExpr("x")])
+
+# ╔═╡ b2d71d29-81c2-44e9-b08c-8b692cc0f91f
+StringExpr("hello")  # StringExpr renders as inline code
+
 # ╔═╡ Cell order:
-# ╟─8a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d
+# ╠═8a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d
 # ╟─1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
 # ╟─2a3b4c5d-6e7f-8a9b-0c1d-2e3f4a5b6c7d
 # ╠═3a4b5c6d-7e8f-9a0b-1c2d-3e4f5a6b7c8d
@@ -137,3 +168,11 @@ formula_mathjson2
 # ╠═0549da15-4b1d-42a8-a784-eb04e4eedc5a
 # ╠═31c6d3cb-40fa-4b43-811f-d4ca36a32859
 # ╠═6fca2315-42cb-4b3e-84dd-bf9de4497995
+# ╟─418a0962-bddb-4a69-8755-6787cfe70616
+# ╠═f3b985bb-3778-4aad-8cdc-4df693c9ea73
+# ╠═2ec67358-4a9a-4ac7-b04a-5dc581fd4e4d
+# ╠═d10ebfc8-dc42-47cd-b0c9-cec631df75e8
+# ╠═e5170e29-a403-4a4b-9742-757b25779853
+# ╟─e55a46d6-f1e1-4c5e-913c-e030950add25
+# ╠═6bc4581e-845b-4bd2-8a77-3cc3807decc9
+# ╠═b2d71d29-81c2-44e9-b08c-8b692cc0f91f
