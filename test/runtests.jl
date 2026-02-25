@@ -1,6 +1,14 @@
 using Test
 using PlutoMathInput
 
+# MathJSON display extension tests (conditional on MathJSON availability)
+try
+    using MathJSON
+    include("test_mathjson_display.jl")
+catch e
+    @warn "Skipping MathJSONDisplayExt tests: MathJSON.jl not available" exception=e
+end
+
 @testset "PlutoMathInput.jl" begin
 
     @testset "Constructor defaults" begin
