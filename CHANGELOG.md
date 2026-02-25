@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Symbolics.jl extension (`ext/PlutoMathInputSymbolicsExt.jl`) and `:symbolics` output format
+- `to_symbolics` / `from_symbolics` functions
+
 ### Added
 
 - `MathDisplay` component: read-only, centered mathematical formula display using MathLive

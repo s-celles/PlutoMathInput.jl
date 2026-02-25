@@ -38,6 +38,7 @@ using PlutoMathInput
 
     @testset "Invalid format" begin
         @test_throws ArgumentError MathInput(format = :invalid)
+        @test_throws ArgumentError MathInput(format = :symbolics)
     end
 
     @testset "initial_value (STA-05)" begin
@@ -68,10 +69,6 @@ using PlutoMathInput
         mi_latex = MathInput(format = :latex)
         @test PlutoMathInput.Bonds.transform_value(mi_latex, "x + 1") == "x + 1"
 
-        # Symbolics format without Symbolics loaded: fallback to string
-        mi_sym = MathInput(format = :symbolics)
-        val = PlutoMathInput.Bonds.transform_value(mi_sym, "[\"Add\", \"x\", 1]")
-        @test val isa String
     end
 
     @testset "HTML rendering (UBI-01, UBI-04)" begin
@@ -239,36 +236,4 @@ end
         @test occursin("letterShapeStyle", html)
     end
 
-end
-
-# Symbolics extension tests (only run if Symbolics is available)
-const _HAS_SYMBOLICS = try
-    using Symbolics
-    true
-catch
-    false
-end
-
-if _HAS_SYMBOLICS
-    @testset "Symbolics extension (OPT-01, OPT-02)" begin
-        @testset "to_symbolics" begin
-            expr = PlutoMathInput.to_symbolics("[\"Add\", \"x\", 1]")
-            @test expr isa Symbolics.Num || expr isa Number
-        end
-
-        @testset "from_symbolics" begin
-            Symbolics.@variables x
-            mjson = PlutoMathInput.from_symbolics(x + 1)
-            @test mjson isa String
-        end
-
-        @testset "transform_value with Symbolics" begin
-            mi = MathInput(format = :symbolics)
-            val = PlutoMathInput.Bonds.transform_value(mi, "[\"Add\", \"x\", 1]")
-            # Should now return a Symbolics expression
-            @test !(val isa String)
-        end
-    end
-else
-    @info "Symbolics.jl not available, skipping extension tests"
 end

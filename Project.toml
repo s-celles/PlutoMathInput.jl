@@ -8,22 +8,14 @@ AbstractPlutoDingetjes = "6e696c72-6542-2067-7265-42206c756150"
 HypertextLiteral = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
 
-[weakdeps]
-Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
-
-[extensions]
-PlutoMathInputSymbolicsExt = "Symbolics"
-
 [compat]
 AbstractPlutoDingetjes = "1"
 HypertextLiteral = "0.9"
 JSON3 = "1"
-Symbolics = "5, 6"
 julia = "1.9"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 
 [targets]
-test = ["Test", "Symbolics"]
+test = ["Test"]

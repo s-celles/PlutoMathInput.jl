@@ -8,12 +8,12 @@ by default, compatible with [`MathJSON.jl`](https://github.com/s-celles/MathJSON
 # Keyword Arguments
 - `default::String=""`: default value as a MathJSON string (e.g. `"[\\"Add\\", \\"x\\", 1]"`)
 - `latex::String=""`: default value as LaTeX (alternative to `default`, e.g. `"x + 1"`)
-- `format::Symbol=:mathjson`: output format — `:mathjson`, `:latex`, or `:symbolics`
+- `format::Symbol=:mathjson`: output format — `:mathjson` or `:latex`
 - `disabled::Bool=false`: if `true`, the field is read-only
 - `style::String=""`: CSS style applied to the container `<div>`
 - `options::Dict{String,Any}=Dict()`: extra MathLive options (e.g. `"smartFence" => true`)
 - `macros::Dict{String,String}=Dict()`: custom LaTeX macros (e.g. `"\\\\R" => "\\\\mathbb{R}"`)
-- `canonicalize::Bool=true`: if `true`, display MathJSON defaults in the math-field via the Compute Engine (may canonicalize expressions); if `false`, skip CE display and keep the raw MathJSON for `@bind`
+- `canonicalize::Bool=false`: if `true`, display MathJSON defaults in the math-field via the Compute Engine (may canonicalize expressions); if `false`, skip CE display and keep the raw MathJSON for `@bind`
 
 # Examples
 ```julia
@@ -50,8 +50,8 @@ function MathInput(;
     macros::Dict{String,String} = Dict{String,String}(),
     canonicalize::Bool = false,
 )
-    format in (:mathjson, :latex, :symbolics) ||
-        throw(ArgumentError("format must be :mathjson, :latex, or :symbolics, got :$format"))
+    format in (:mathjson, :latex) ||
+        throw(ArgumentError("format must be :mathjson or :latex, got :$format"))
     return MathInput(default, latex, format, disabled, style, options, macros, canonicalize)
 end
 
@@ -71,17 +71,5 @@ function Bonds.possible_values(::MathInput)
 end
 
 function Bonds.transform_value(mi::MathInput, value_from_js)
-    if mi.format == :latex
-        return string(value_from_js)
-    elseif mi.format == :symbolics
-        # Symbolics conversion is handled via the extension.
-        # If Symbolics is not loaded, return the raw MathJSON string.
-        return _maybe_to_symbolics(string(value_from_js))
-    else
-        return string(value_from_js)
-    end
+    return string(value_from_js)
 end
-
-# Fallback: just return the value. The Symbolics extension adds a more
-# specific method for String that performs the actual conversion.
-_maybe_to_symbolics(s) = s
