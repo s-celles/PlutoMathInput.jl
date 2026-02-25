@@ -144,6 +144,19 @@ FunctionExpr(:Add, [SymbolExpr("y"), NumberExpr(2), SymbolExpr("x")])
 # ╔═╡ b2d71d29-81c2-44e9-b08c-8b692cc0f91f
 StringExpr("hello")  # StringExpr renders as inline code
 
+# ╔═╡ 7368d2e5-b733-4bff-b0d6-80895fcee80d
+md"""
+## 8. MathDisplay
+
+Display MathJSON or LaTeX expression through MathField:
+"""
+
+# ╔═╡ a8dab61c-a81e-4e7c-967c-285d21970a45
+MathDisplay(default="[\"Multiply\", \"y\", 3, \"x\"]")
+
+# ╔═╡ ea36b7ee-a195-4915-b74b-f142f64a0701
+MathDisplay(latex=raw"\frac{2}{\sqrt{1+x}}")
+
 # ╔═╡ Cell order:
 # ╠═8a1b2c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d
 # ╟─1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
@@ -176,3 +189,6 @@ StringExpr("hello")  # StringExpr renders as inline code
 # ╟─e55a46d6-f1e1-4c5e-913c-e030950add25
 # ╠═6bc4581e-845b-4bd2-8a77-3cc3807decc9
 # ╠═b2d71d29-81c2-44e9-b08c-8b692cc0f91f
+# ╟─7368d2e5-b733-4bff-b0d6-80895fcee80d
+# ╠═a8dab61c-a81e-4e7c-967c-285d21970a45
+# ╠═ea36b7ee-a195-4915-b74b-f142f64a0701
