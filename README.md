@@ -81,6 +81,7 @@ using PlutoMathInput, Symbolics
 | `style` | `String` | `""` | CSS style for container |
 | `options` | `Dict` | `Dict()` | MathLive options (e.g., `"smartFence" => true`) — see [docs](docs/options-and-macros.md) |
 | `macros` | `Dict` | `Dict()` | Custom LaTeX macros (e.g., `"\\R" => "\\mathbb{R}"`) — see [docs](docs/options-and-macros.md) |
+| `icon_position` | `Symbol` | `:right` | Position of MathLive icons: `:left` or `:right` — see [docs](docs/icon-position.md) |
 
 ## Example Notebook
 

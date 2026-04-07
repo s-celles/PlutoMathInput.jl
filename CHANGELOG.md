@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `icon_position` keyword argument for `MathInput`: controls the position of the MathLive menu and virtual keyboard icons (`:left` or `:right`, default `:right`)
+
 ## [0.3.1] - 2026-02-25
 
 ### Removed

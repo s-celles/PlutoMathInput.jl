@@ -30,9 +30,14 @@ function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
     #   keyboard events and breaks physical keyboard input
     # - Wrapper <span> gets .value and dispatches "input" for @bind
 
+    icon_left = mi.icon_position == :left
+
     result = @htl """
     <span style=$(style_attr)>
     <link rel="stylesheet" href=$(MATHLIVE_CDN_CSS) />
+    $(icon_left ? @htl("""<style>
+    .math-field-container math-field::part(content) { order: 1; }
+    </style>""") : @htl(""))
 
     <div class="math-field-container"
         style="width: 100%; min-height: 2.5em; border: 1px solid #ccc; border-radius: 4px; padding: 8px; font-size: 1.2em;">

@@ -14,6 +14,7 @@ by default, compatible with [`MathJSON.jl`](https://github.com/s-celles/MathJSON
 - `options::Dict{String,Any}=Dict()`: extra MathLive options (e.g. `"smartFence" => true`)
 - `macros::Dict{String,String}=Dict()`: custom LaTeX macros (e.g. `"\\\\R" => "\\\\mathbb{R}"`)
 - `canonicalize::Bool=false`: if `true`, display MathJSON defaults in the math-field via the Compute Engine (may canonicalize expressions); if `false`, skip CE display and keep the raw MathJSON for `@bind`
+- `icon_position::Symbol=:right`: position of the MathLive menu and virtual keyboard icons — `:left` or `:right`
 
 # Examples
 ```julia
@@ -38,6 +39,7 @@ struct MathInput
     options::Dict{String,Any}
     macros::Dict{String,String}
     canonicalize::Bool
+    icon_position::Symbol
 end
 
 function MathInput(;
@@ -49,10 +51,13 @@ function MathInput(;
     options::Dict{String,Any} = Dict{String,Any}(),
     macros::Dict{String,String} = Dict{String,String}(),
     canonicalize::Bool = false,
+    icon_position::Symbol = :right,
 )
     format in (:mathjson, :latex) ||
         throw(ArgumentError("format must be :mathjson or :latex, got :$format"))
-    return MathInput(default, latex, format, disabled, style, options, macros, canonicalize)
+    icon_position in (:left, :right) ||
+        throw(ArgumentError("icon_position must be :left or :right, got :$icon_position"))
+    return MathInput(default, latex, format, disabled, style, options, macros, canonicalize, icon_position)
 end
 
 # --- AbstractPlutoDingetjes interface ---

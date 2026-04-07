@@ -138,6 +138,32 @@ end
         @test occursin("mathinput-fallback", html)
         @test occursin("x^2", html)
     end
+
+    @testset "Icon position: left" begin
+        mi = MathInput(icon_position = :left)
+        @test mi.icon_position == :left
+        html = repr(MIME"text/html"(), mi)
+        @test occursin("math-field::part(content)", html)
+        @test occursin("order: 1", html)
+    end
+
+    @testset "Icon position: right (default)" begin
+        mi = MathInput()
+        @test mi.icon_position == :right
+        html = repr(MIME"text/html"(), mi)
+        @test !occursin("::part(content)", html)
+    end
+
+    @testset "Icon position: explicit right" begin
+        mi = MathInput(icon_position = :right)
+        html = repr(MIME"text/html"(), mi)
+        @test !occursin("::part(content)", html)
+    end
+
+    @testset "Icon position: invalid" begin
+        @test_throws ArgumentError MathInput(icon_position = :foo)
+        @test_throws ArgumentError MathInput(icon_position = :center)
+    end
 end
 
 @testset "MathDisplay" begin
