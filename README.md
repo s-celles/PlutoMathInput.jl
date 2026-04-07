@@ -1,5 +1,8 @@
 # PlutoMathInput.jl
 
+[![CI](https://github.com/s-celles/PlutoMathInput.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/s-celles/PlutoMathInput.jl/actions/workflows/CI.yml)
+[![codecov](https://codecov.io/gh/s-celles/PlutoMathInput.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/s-celles/PlutoMathInput.jl)
+
 A [Pluto.jl](https://github.com/JuliaPluto/Pluto.jl) widget for WYSIWYG mathematical formula input, powered by [MathLive](https://mathlive.io/).
 
 ![PlutoMathInput screenshot](assets/screenshot.png)
