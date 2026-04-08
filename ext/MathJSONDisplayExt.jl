@@ -56,12 +56,12 @@ function _mathjson_html(expr::AbstractMathJSONExpr)
             });
         }
 
-        function mjsonToLatex(node) {
+        function mjsonToLatex(ce, node) {
             if (Array.isArray(node) && node.length > 1) {
                 var head = node[0];
                 var args = node.slice(1);
                 if (head === "Add") {
-                    var parts = args.map(mjsonToLatex);
+                    var parts = args.map(function(a) { return mjsonToLatex(ce, a); });
                     return parts.reduce(function(acc, p, i) {
                         if (i === 0) return p;
                         if (p.startsWith("-")) return acc + p;
@@ -69,7 +69,7 @@ function _mathjson_html(expr::AbstractMathJSONExpr)
                     }, "");
                 }
                 if (head === "Multiply") {
-                    return args.map(mjsonToLatex).join("\\\\cdot ");
+                    return args.map(function(a) { return mjsonToLatex(ce, a); }).join("\\\\cdot ");
                 }
             }
             try { return ce.box(node, {canonical: false}).latex || String(node); }
@@ -85,7 +85,7 @@ function _mathjson_html(expr::AbstractMathJSONExpr)
             if (!ce) { showFallback(); return; }
             try {
                 var json = JSON.parse(jsonStr);
-                var latex = mjsonToLatex(json);
+                var latex = mjsonToLatex(ce, json);
                 mf.setValue(latex);
                 clearTimeout(timeoutId);
             } catch(e) {
