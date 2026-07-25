@@ -1,0 +1,44 @@
+# Ignore all files by default, except those explicitly allowed below
+*
+
+# Allow specific files and directories
+#!gitignore
+
+!README.md
+!LICENSE
+!CHANGELOG.md
+!CONTRIBUTORS.md
+
+!Project.toml
+
+!src/
+!src/*.jl
+
+!ext/
+!ext/*.jl
+
+!test/
+!test/*.jl
+
+!assets/
+!assets/*.png
+
+!notebooks/
+!notebooks/*.jl
+!notebooks/justfile
+
+!docs/
+!docs/**
+
+!.github/
+!.github/workflows/
+!.github/workflows/*.yml
+
+# Ignore compiled files and temporary files
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+
+# OS generated files
+*.DS_Store
+!.gitignore
