@@ -1,0 +1,15 @@
+# By default, run the Pluto main menu
+default:
+    julia --project=.. -e 'using Pluto; Pluto.run()'
+
+# Run a specific notebook (e.g., just run example.jl)
+run notebook:
+    julia --project=.. -e 'using Pluto; Pluto.run(notebook="{{notebook}}")'
+
+# Shortcut for example.jl
+example:
+    just run example.jl
+
+# Utility script to unpin packages (default: all notebooks in the folder)
+unpin target=".":
+    julia unpin_pluto.jl {{target}}
