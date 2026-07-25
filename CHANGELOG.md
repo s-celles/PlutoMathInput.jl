@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `justfile` and `unpin_pluto.jl` utility scripts for managing notebooks.
+- A robust `.gitignore` using a standard Julia package allowlist approach.
+
 ## [0.4.1] - 2026-04-08
 
 ### Fixed
