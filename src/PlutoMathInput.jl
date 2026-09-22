@@ -3,7 +3,7 @@ module PlutoMathInput
 using AbstractPlutoDingetjes
 using AbstractPlutoDingetjes.Bonds
 using HypertextLiteral
-using JSON3
+using JSON
 
 export MathInput, MathDisplay
 
