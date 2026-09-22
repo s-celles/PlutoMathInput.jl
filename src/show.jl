@@ -8,8 +8,8 @@ const COMPUTE_ENGINE_CDN_JS = "https://cdn.jsdelivr.net/npm/@cortex-js/compute-e
 
 function Base.show(io::IO, mime::MIME"text/html", mi::MathInput)
     # Serialise options & macros to JSON for JS consumption
-    options_json = isempty(mi.options) ? "{}" : JSON3.write(mi.options)
-    macros_json  = isempty(mi.macros)  ? "{}" : JSON3.write(mi.macros)
+    options_json = isempty(mi.options) ? "{}" : JSON.json(mi.options)
+    macros_json  = isempty(mi.macros)  ? "{}" : JSON.json(mi.macros)
 
     disabled_str = mi.disabled ? "true" : "false"
     style_attr   = isempty(mi.style) ? "" : mi.style
@@ -244,8 +244,8 @@ end
 
 function Base.show(io::IO, mime::MIME"text/html", md::MathDisplay)
     # Serialise options & macros to JSON for JS consumption
-    options_json = isempty(md.options) ? "{}" : JSON3.write(md.options)
-    macros_json  = isempty(md.macros)  ? "{}" : JSON3.write(md.macros)
+    options_json = isempty(md.options) ? "{}" : JSON.json(md.options)
+    macros_json  = isempty(md.macros)  ? "{}" : JSON.json(md.macros)
 
     style_attr      = isempty(md.style) ? "" : md.style
     initial_latex    = md.latex
